@@ -1,13 +1,20 @@
+import Models.BlockedIP;
+import Models.Duration;
 import Models.Record;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 public class RecordService {
 
     public static String SQL_INSERT = "INSERT INTO records (date, ipAddress, httpMethod, responseStatus, userAgent) VALUES(?,?,?,?,?);";
+    public static String SQL_SELECT_TIME_BOUNDED_LIMITED = "SELECT ipAddress, COUNT(*) as count FROM records WHERE id IN (\n" +
+            "\tSELECT id FROM records WHERE (records.`date` < ? AND records.`date` < ?)\n" +
+            ") GROUP BY ipAddress\n" +
+            "HAVING count > ?;";
 
     private Connection connection;
 
@@ -40,5 +47,9 @@ public class RecordService {
         } catch (SQLException e) {
             throw e;
         }
+    }
+
+    public List<BlockedIP> findViolatingIPAddresses(Date startDate, Duration duration, int limit) {
+        return null;
     }
 }

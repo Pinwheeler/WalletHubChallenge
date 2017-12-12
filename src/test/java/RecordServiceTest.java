@@ -1,3 +1,5 @@
+import Models.BlockedIP;
+import Models.Duration;
 import Models.Record;
 import org.junit.Before;
 import org.junit.Test;
@@ -6,11 +8,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import sun.jvm.hotspot.opto.Block;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,12 +32,15 @@ public class RecordServiceTest {
     @Mock
     private Connection connectionMock;
     @Mock
-    private PreparedStatement statementMock;
+    private PreparedStatement insertStatement;
+    @Mock
+    private PreparedStatement selectStatement;
 
     @Before
     public void init() {
         try {
-            given(connectionMock.prepareStatement(RecordService.SQL_INSERT)).willReturn(statementMock);
+            given(connectionMock.prepareStatement(RecordService.SQL_INSERT)).willReturn(insertStatement);
+            given(connectionMock.prepareStatement(RecordService.SQL_SELECT_TIME_BOUNDED_LIMITED)).willReturn(selectStatement);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -56,24 +61,33 @@ public class RecordServiceTest {
         try {
             subject.persist(records);
 
-            verify(statementMock, times(2)).setObject(1, dt);
+            verify(insertStatement, times(2)).setObject(1, dt);
 
-            verify(statementMock).setString(2, "112");
-            verify(statementMock).setString(3, "GOTCHA");
-            verify(statementMock).setInt(4,99);
-            verify(statementMock).setString(5,"James Bond");
+            verify(insertStatement).setString(2, "112");
+            verify(insertStatement).setString(3, "GOTCHA");
+            verify(insertStatement).setInt(4,99);
+            verify(insertStatement).setString(5,"James Bond");
 
-            verify(statementMock).setString(2, "303");
-            verify(statementMock).setString(3, "PROCEED");
-            verify(statementMock).setInt(4,401);
-            verify(statementMock).setString(5,"Smith");
+            verify(insertStatement).setString(2, "303");
+            verify(insertStatement).setString(3, "PROCEED");
+            verify(insertStatement).setInt(4,401);
+            verify(insertStatement).setString(5,"Smith");
 
-            verify(statementMock, times(2)).addBatch();
-            verify(statementMock).executeBatch();
+            verify(insertStatement, times(2)).addBatch();
+            verify(insertStatement).executeBatch();
             verify(connectionMock).commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void testFindingViolatingIPAddresses() {
+        Date date = new Date;
+        subject.findViolatingIPAddresses(date, Duration.daily, 50);
+
+        verify(selectStatement).setObject(1, date);
+        verify(selectStatement).setObject(2, );
     }
 }
