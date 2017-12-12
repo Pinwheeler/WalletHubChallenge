@@ -45,11 +45,10 @@ public class RecordServiceTest {
     @Test
     public void testPersistingAListOfRecords() {
         List<Record> records = new ArrayList<Record>();
-        Date dt0 = new Date();
-        Date dt1 = new Date();
+        Date dt = new Date();
 
-        Record record0 = new Record(dt0, "112", "GOTCHA", 99, "James Bond");
-        Record record1 = new Record(dt1, "303", "PROCEED", 401, "Smith");
+        Record record0 = new Record(dt, "112", "GOTCHA", 99, "James Bond");
+        Record record1 = new Record(dt, "303", "PROCEED", 401, "Smith");
 
         records.add(record0);
         records.add(record1);
@@ -57,17 +56,17 @@ public class RecordServiceTest {
         try {
             subject.persist(records);
 
-            verify(statementMock).setObject(0, dt0);
-            verify(statementMock).setString(1, "112");
-            verify(statementMock).setString(2, "GOTCHA");
-            verify(statementMock).setInt(3,99);
-            verify(statementMock).setString(4,"James Bond");
+            verify(statementMock, times(2)).setObject(1, dt);
 
-            verify(statementMock).setObject(0, dt1);
-            verify(statementMock).setString(1, "303");
-            verify(statementMock).setString(2, "PROCEED");
-            verify(statementMock).setInt(3,401);
-            verify(statementMock).setString(4,"Smith");
+            verify(statementMock).setString(2, "112");
+            verify(statementMock).setString(3, "GOTCHA");
+            verify(statementMock).setInt(4,99);
+            verify(statementMock).setString(5,"James Bond");
+
+            verify(statementMock).setString(2, "303");
+            verify(statementMock).setString(3, "PROCEED");
+            verify(statementMock).setInt(4,401);
+            verify(statementMock).setString(5,"Smith");
 
             verify(statementMock, times(2)).addBatch();
             verify(statementMock).executeBatch();
