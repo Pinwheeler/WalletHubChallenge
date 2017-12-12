@@ -27,6 +27,8 @@ public class DatabaseServiceTest {
     @Mock
     private Connection connectionMock;
     @Mock
+    private PreparedStatement deleteStatement;
+    @Mock
     private PreparedStatement insertStatement;
     @Mock
     private PreparedStatement selectStatement;
@@ -39,6 +41,7 @@ public class DatabaseServiceTest {
         try {
             given(resultSet.next()).willReturn(true).willReturn(false);
             given(selectStatement.executeQuery()).willReturn(resultSet);
+            given(connectionMock.prepareStatement(DatabaseService.SQL_DELETE_ALL_RECORDS)).willReturn(deleteStatement);
             given(connectionMock.prepareStatement(DatabaseService.SQL_INSERT_RECORDS)).willReturn(insertStatement);
             given(connectionMock.prepareStatement(DatabaseService.SQL_SELECT_TIME_BOUNDED_LIMITED)).willReturn(selectStatement);
         } catch (SQLException e) {
@@ -61,6 +64,8 @@ public class DatabaseServiceTest {
         try {
             subject.persistRecords(records);
 
+            verify(deleteStatement).execute();
+
             verify(insertStatement, times(2)).setObject(1, dt);
 
             verify(insertStatement).setString(2, "112");
@@ -75,7 +80,7 @@ public class DatabaseServiceTest {
 
             verify(insertStatement, times(2)).addBatch();
             verify(insertStatement).executeBatch();
-            verify(connectionMock).commit();
+            verify(connectionMock, times(2)).commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }

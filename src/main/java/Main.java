@@ -15,7 +15,7 @@ import java.util.Scanner;
 @Parameters(separators = "=")
 public class Main {
 
-    @Parameter(names = {"--file", "-f"}, converter = FileConverter.class)
+    @Parameter(names = {"--accesslog"}, converter = FileConverter.class)
     File logFile;
     @Parameter(names = "--startDate", converter = DateConverter.class)
     Date startDate;
@@ -36,28 +36,32 @@ public class Main {
     public void run() {
         try {
             DatabaseService databaseService = ServiceProvider.defaultRecordService();
-            if (logFile != null) { // Post to database mode
+            boolean uploadLogfile = (logFile != null);
+            boolean findLimitViolators = (startDate != null && duration != null && threshold > 0);
+            if (uploadLogfile || findLimitViolators) {
+                if (uploadLogfile) {
 
-                Scanner testScanner = new Scanner(logFile);
-                RecordParser recordParser = new RecordParser(testScanner);
+                    Scanner testScanner = new Scanner(logFile);
+                    RecordParser recordParser = new RecordParser(testScanner);
 
-                databaseService.persistRecords(recordParser.parse());
+                    databaseService.persistRecords(recordParser.parse());
 
-            } else if (startDate != null && duration != null && threshold > 0){ // Find limit violators mode
-                List<BlockedIP> blockedIPs = databaseService.findViolatingIPAddresses(startDate, duration, threshold);
-                databaseService.persistBlockedIPs(blockedIPs);
-                for (BlockedIP ip : blockedIPs) {
-                    System.out.print(ip);
-                    System.out.println();
+                } if (findLimitViolators) {
+                    List<BlockedIP> blockedIPs = databaseService.findViolatingIPAddresses(startDate, duration, threshold);
+                    databaseService.persistBlockedIPs(blockedIPs);
+                    for (BlockedIP ip : blockedIPs) {
+                        System.out.print(ip);
+                        System.out.println();
+                    }
                 }
             } else {
                 System.out.print("\nInvalid usage. You must specify either a file or a " +
                         "start-time, duration, threshold combination\n\n" +
                         "Valid Usage:\n " +
-                        "\t--file=, -f=\t\tspecify a path to the log file to build the database\n" +
-                        "\t--startDate\t\t\tspecify a start time for audit in form yyyy-MM-dd.HH:mm:ss\n" +
-                        "\t--duration\t\t\tspecify a duration for audit. Either 'daily' or 'hourly defaults to daily\n" +
-                        "\t--threshold\t\t\tspecify a threshold for audit.");
+                        "\t--accesslog=\t\tspecify a path to the log file to build the database\n" +
+                        "\t--startDate=\t\tspecify a start time for audit in form yyyy-MM-dd.HH:mm:ss\n" +
+                        "\t--duration=\t\tspecify a duration for audit. Either 'daily' or 'hourly defaults to daily\n" +
+                        "\t--threshold=\t\tspecify a threshold for audit.");
             }
         } catch (Exception e) {
             e.printStackTrace();

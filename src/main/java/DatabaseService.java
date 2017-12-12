@@ -13,6 +13,7 @@ import java.util.List;
 
 public class DatabaseService {
 
+    public static String SQL_DELETE_ALL_RECORDS = "TRUNCATE TABLE records";
     public static String SQL_INSERT_RECORDS = "INSERT INTO records (date, ipAddress, httpMethod, responseStatus, userAgent) VALUES(?,?,?,?,?);";
     public static String SQL_SELECT_TIME_BOUNDED_LIMITED = "SELECT ipAddress, COUNT(*) as count FROM records WHERE id IN (\n" +
             "\tSELECT id FROM records WHERE (records.`date` > ? AND records.`date` < ?)\n" +
@@ -29,6 +30,13 @@ public class DatabaseService {
 
     void persistRecords(List<Record> recordList) {
         try {
+            // Delete all records before rebuilding the table (this is as opposed to creating some kind of
+            // hash for the records to avoid duplication. It is considerably faster and works considering we
+            // only have one logfile from which we are drawing our information
+            PreparedStatement delete = connection.prepareStatement(SQL_DELETE_ALL_RECORDS);
+            delete.execute();
+            connection.commit();
+
             PreparedStatement statement = connection.prepareStatement(SQL_INSERT_RECORDS);
             int i = 0;
 
