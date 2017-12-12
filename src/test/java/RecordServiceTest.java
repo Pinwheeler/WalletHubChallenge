@@ -12,8 +12,10 @@ import sun.jvm.hotspot.opto.Block;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -26,19 +28,21 @@ public class RecordServiceTest {
 
     private RecordService subject;
 
-    @Captor
-    ArgumentCaptor<Record> captor;
-
     @Mock
     private Connection connectionMock;
     @Mock
     private PreparedStatement insertStatement;
     @Mock
     private PreparedStatement selectStatement;
+    @Mock
+    private ResultSet resultSet;
 
     @Before
     public void init() {
+
         try {
+            given(resultSet.next()).willReturn(true).willReturn(false);
+            given(selectStatement.executeQuery()).willReturn(resultSet);
             given(connectionMock.prepareStatement(RecordService.SQL_INSERT)).willReturn(insertStatement);
             given(connectionMock.prepareStatement(RecordService.SQL_SELECT_TIME_BOUNDED_LIMITED)).willReturn(selectStatement);
         } catch (SQLException e) {
@@ -83,11 +87,40 @@ public class RecordServiceTest {
     }
 
     @Test
-    public void testFindingViolatingIPAddresses() {
-        Date date = new Date;
+    public void testFindingDailyViolatingIPAddresses() {
+        Date date = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add( Calendar.DATE, 1);
+        Date tomorrow = cal.getTime();
         subject.findViolatingIPAddresses(date, Duration.daily, 50);
 
-        verify(selectStatement).setObject(1, date);
-        verify(selectStatement).setObject(2, );
+        try {
+            verify(selectStatement).setObject(1, date);
+            verify(selectStatement).setObject(2, tomorrow);
+            verify(selectStatement).setInt(3, 50);
+            verify(selectStatement).executeQuery();
+            verify(connectionMock).commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testFindingHourlyViolatingIPAddresses() {
+        Date date = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add( Calendar.HOUR, 1);
+        Date hourLater = cal.getTime();
+        subject.findViolatingIPAddresses(date, Duration.hourly, 50);
+
+        try {
+            verify(selectStatement).setObject(1, date);
+            verify(selectStatement).setObject(2, hourLater);
+            verify(selectStatement).setInt(3, 50);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
