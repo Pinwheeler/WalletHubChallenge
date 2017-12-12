@@ -1,16 +1,16 @@
 package Models;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class Record {
 
-    public LocalDateTime date;
+    public Date date;
     public String ipAddress;
     public String httpMethod;
     public int responseStatus;
     public String userAgent;
 
-    public Record(LocalDateTime date, String ipAddress, String httpMethod, int responseStatus, String userAgent) {
+    public Record(Date date, String ipAddress, String httpMethod, int responseStatus, String userAgent) {
         this.date = date;
         this.ipAddress = ipAddress;
         this.httpMethod = httpMethod;

@@ -1,5 +1,7 @@
 import Models.Record;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -7,21 +9,21 @@ import java.util.*;
 public class RecordParser {
 
     private Scanner scanner;
-    private DateTimeFormatter formatter;
+    private SimpleDateFormat formatter;
 
     public RecordParser(Scanner scanner) {
         this.scanner = scanner;
-        this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.ENGLISH);
+        this.formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     }
 
-    public List<Record> parse() {
+    public List<Record> parse() throws ParseException {
         ArrayList<Record> records = new ArrayList<>();
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             String[] substrings = line.split("\\|");
-            LocalDateTime dateTime = LocalDateTime.parse(substrings[0], formatter);
+            Date date = formatter.parse(substrings[0]);
             Record record = new Record(
-                    dateTime,
+                    date,
                     substrings[1],
                     substrings[2].replaceAll("^\"|\"$", ""),
                     Integer.parseInt(substrings[3]),

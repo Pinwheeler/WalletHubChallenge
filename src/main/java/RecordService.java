@@ -7,7 +7,7 @@ import java.util.List;
 
 public class RecordService {
 
-    public static String SQL_INSERT = "INSERT INTO records VALUES(?,?,?,?,?,?);";
+    public static String SQL_INSERT = "INSERT INTO records (date, ipAddress, httpMethod, responseStatus, userAgent) VALUES(?,?,?,?,?);";
 
     private Connection connection;
 
@@ -21,11 +21,11 @@ public class RecordService {
             int i = 0;
 
             for (Record record: recordList) {
-                statement.setObject(0, record.date);
-                statement.setString(1, record.ipAddress);
-                statement.setString(2, record.httpMethod);
-                statement.setInt(3, record.responseStatus);
-                statement.setString(4, record.userAgent);
+                statement.setObject(1, record.date);
+                statement.setString(2, record.ipAddress);
+                statement.setString(3, record.httpMethod);
+                statement.setInt(4, record.responseStatus);
+                statement.setString(5, record.userAgent);
 
                 statement.addBatch();
                 i++;

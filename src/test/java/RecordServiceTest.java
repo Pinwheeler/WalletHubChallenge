@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -44,8 +45,8 @@ public class RecordServiceTest {
     @Test
     public void testPersistingAListOfRecords() {
         List<Record> records = new ArrayList<Record>();
-        LocalDateTime dt0 = LocalDateTime.now();
-        LocalDateTime dt1 = LocalDateTime.now();
+        Date dt0 = new Date();
+        Date dt1 = new Date();
 
         Record record0 = new Record(dt0, "112", "GOTCHA", 99, "James Bond");
         Record record1 = new Record(dt1, "303", "PROCEED", 401, "Smith");

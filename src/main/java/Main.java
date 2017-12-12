@@ -1,7 +1,6 @@
 import Converters.DateTimeConverter;
 import Converters.DurationConverter;
 import Converters.FileConverter;
-import Models.Args;
 import Models.Duration;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -9,8 +8,6 @@ import com.beust.jcommander.Parameter;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Scanner;
-
-import static com.sun.javafx.scene.control.skin.Utils.getResource;
 
 public class Main {
 
