@@ -1,14 +1,10 @@
-import Models.BlockedIP;
 import Models.Duration;
 import Models.Record;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import sun.jvm.hotspot.opto.Block;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,9 +20,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RecordServiceTest {
+public class DatabaseServiceTest {
 
-    private RecordService subject;
+    private DatabaseService subject;
 
     @Mock
     private Connection connectionMock;
@@ -43,12 +39,12 @@ public class RecordServiceTest {
         try {
             given(resultSet.next()).willReturn(true).willReturn(false);
             given(selectStatement.executeQuery()).willReturn(resultSet);
-            given(connectionMock.prepareStatement(RecordService.SQL_INSERT)).willReturn(insertStatement);
-            given(connectionMock.prepareStatement(RecordService.SQL_SELECT_TIME_BOUNDED_LIMITED)).willReturn(selectStatement);
+            given(connectionMock.prepareStatement(DatabaseService.SQL_INSERT_RECORDS)).willReturn(insertStatement);
+            given(connectionMock.prepareStatement(DatabaseService.SQL_SELECT_TIME_BOUNDED_LIMITED)).willReturn(selectStatement);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        subject = new RecordService(connectionMock);
+        subject = new DatabaseService(connectionMock);
     }
 
     @Test
@@ -63,7 +59,7 @@ public class RecordServiceTest {
         records.add(record1);
 
         try {
-            subject.persist(records);
+            subject.persistRecords(records);
 
             verify(insertStatement, times(2)).setObject(1, dt);
 

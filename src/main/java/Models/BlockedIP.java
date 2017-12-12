@@ -1,8 +1,8 @@
 package Models;
 
 public class BlockedIP {
-    private String ipAddress;
-    private String comments;
+    public String ipAddress;
+    public String comments;
 
     public BlockedIP(String ipAddress, String comments) {
         this.ipAddress = ipAddress;

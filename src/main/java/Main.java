@@ -33,16 +33,17 @@ public class Main {
 
     public void run() {
         try {
-            RecordService recordService = ServiceProvider.defaultRecordService();
+            DatabaseService databaseService = ServiceProvider.defaultRecordService();
             if (logFile != null) { // Post to database mode
 
                 Scanner testScanner = new Scanner(logFile);
                 RecordParser recordParser = new RecordParser(testScanner);
 
-                recordService.persist(recordParser.parse());
+                databaseService.persistRecords(recordParser.parse());
 
             } else { // Find limit violators mode
-                List<BlockedIP> blockedIPs = recordService.findViolatingIPAddresses(startDate, duration, threshold);
+                List<BlockedIP> blockedIPs = databaseService.findViolatingIPAddresses(startDate, duration, threshold);
+                databaseService.persistBlockedIPs(blockedIPs);
                 for (BlockedIP ip : blockedIPs) {
                     System.out.print(ip);
                     System.out.println();

@@ -7,14 +7,14 @@ public class ServiceProvider {
     static String dbUser = "root";
     static String dbPassword = null;
 
-    public static RecordService defaultRecordService() throws ServiceProviderException {
+    public static DatabaseService defaultRecordService() throws ServiceProviderException {
         try {
             Connection connection = DriverManager.getConnection( dbURL, dbUser, dbPassword);
             connection.setAutoCommit(false);
-            return new RecordService(connection);
+            return new DatabaseService(connection);
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new ServiceProviderException("Failed to create a RecordService");
+            throw new ServiceProviderException("Failed to create a DatabaseService");
         }
     }
 }
