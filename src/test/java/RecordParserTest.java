@@ -39,13 +39,13 @@ public class RecordParserTest {
         assertEquals(LocalDateTime.parse(dateString1, formatter), firstResult.date);
         assertEquals("192.168.142.23", firstResult.ipAddress);
         assertEquals("GET / HTTP/1.1", firstResult.httpMethod);
-        assertEquals("200", firstResult.responseStatus);
+        assertEquals(200, firstResult.responseStatus);
         assertEquals("swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0", firstResult.userAgent);
 
         assertEquals(LocalDateTime.parse(dateString2, formatter), secondResult.date);
         assertEquals("192.168.31.166", secondResult.ipAddress);
         assertEquals("GET / HTTP/1.1", secondResult.httpMethod);
-        assertEquals("200", secondResult.responseStatus);
+        assertEquals(200, secondResult.responseStatus);
         assertEquals("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063", secondResult.userAgent);
     }
 }

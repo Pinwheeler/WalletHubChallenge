@@ -18,7 +18,13 @@ public class RecordParser {
             String line = scanner.nextLine();
             String[] substrings = line.split("\\|");
             LocalDateTime dateTime = LocalDateTime.parse(substrings[0], formatter);
-            Record record = new Record(dateTime, substrings[1], substrings[2].replaceAll("^\"|\"$", ""), substrings[3], substrings[4].replaceAll("^\"|\"$", ""));
+            Record record = new Record(
+                    dateTime,
+                    substrings[1],
+                    substrings[2].replaceAll("^\"|\"$", ""),
+                    Integer.parseInt(substrings[3]),
+                    substrings[4].replaceAll("^\"|\"$", "")
+            );
             records.add(record);
         }
         return records;
