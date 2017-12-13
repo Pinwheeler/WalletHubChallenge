@@ -1,6 +1,6 @@
-#WalletHub Code Challenge
+# WalletHub Code Challenge
 
-##QuickStart
+## QuickStart
 From within the root directory of this project
 
 1. build project using `$ ./gradlew build`
@@ -8,7 +8,9 @@ From within the root directory of this project
 
 I have a copy of the access log included in this project for ease of access
 
-##Deliverables
+***Note:*** *If you run into errors, make sure you are correctly connecting to the database (default name wallethub) and that you've created the required tables using the table creation queries found below*
+
+## Deliverables
 1. Java progam found in `build/libs/parser-1.0` after running `$ ./gradlew build` or building the project in some other way
 2. Source code included in this repo
 3. MySQL Schema can be recreated using the following Queries
@@ -29,26 +31,23 @@ I have a copy of the access log included in this project for ease of access
   UNIQUE KEY `address` (`address`)
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;```
 4. SQL Queries
-	1. ```"SELECT ipAddress, COUNT(*) as count FROM records WHERE id IN (\n" +
-            "\tSELECT id FROM records WHERE (records.`date` > ? AND records.`date` < ?)\n" +
-            ") GROUP BY ipAddress\n" +
-            "HAVING count > ?;";```
-   2. ```SELECT * FROM records WHERE (ipAddress = "192.168.234.82")```
+	- ```SELECT ipAddress, COUNT(*) AS count FROM records WHERE id IN ( SELECT id FROM records WHERE (records.`date` > ? AND records.`date` < ?) GROUP BY ipAddress HAVING count > ?;```
+	- ```SELECT * FROM records WHERE (ipAddress = "192.168.234.82")```
 
-##Extra
+## Extra
 
-###Database
+### Database
 Default database connection configuration can be found and changed in `ServiceProveder.java`. The defaults are:
 
 - URL: `jdbc:mysql://localhost:3306/wallethub`
 - user: `root`
 - password: `null`
 
-###Bonus Features
+### Bonus Features
 - You build up the records database by running the tool with the `--accesslog` parameter. After this is done once, you can use the query feature as often as you want without having iterate over all of those entries anymore
 - Running multiple threshold violation queries will not introduce duplicate IP entries. Instead, any duplicates will be overwritten with the last queried violation being found in the comment section
 
-###Next Steps
+### Next Steps
 The next features I would want to develop for this tool would be
 
 - Generalizable database, so we don't have to change the hard-coded database information but instead can read it from some kind of configuration file
